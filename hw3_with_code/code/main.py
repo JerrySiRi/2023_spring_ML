@@ -85,23 +85,42 @@ def main(data_path):
     # TODO: Plot the ROCs in one graph
     #==================决策树========================
     from sklearn import tree  # 导入决策树模块
-    clf = tree.DecisionTreeClassifier()  # 实例化
+    max=0
+    target=0
+    clf = tree.DecisionTreeClassifier(criterion="entropy",
+                                    random_state=30,
+                                    splitter="random",
+                                    max_depth=6,
+                                    min_samples_leaf=10,
+                                    min_samples_split=10)  # 实例化
+    #TODO:经过调整参数，发现决策树最大深度为6时最好【剪枝】。若一个节点不足10个样本或分支后不足10个样本就不分支【剪枝】
     tree_model = clf.fit(X_train, y_train)# 【决策树训练后的模型】
     tree_result_train = tree_model.score(X_train, y_train)# 【训练集中的精度】
     tree_result_test = tree_model.score(X_test, y_test)  # 【测试集中的精度】
     print("Decision tree:Accuracy in train set: %.4f" % (tree_result_train))
     print("Decision tree:Accuracy in test set: %.4f" % (tree_result_test))
+
+
     #========================线性回归================
+
     from sklearn import linear_model
-    lr = linear_model.LinearRegression()
+    lr = linear_model.LogisticRegression(C=0.6)#采用了逻辑斯蒂回归，也就是对数几率回归！
+    #TODO:经调参，在正则化系数取得0.6的时候效果最好啦！
     lr_model = lr.fit(X_train, y_train)# 【线性回归训练后的模型】
     lr_result_train = lr_model.score(X_train, y_train)  # 【测试集中的精度】
     lr_result_test = lr_model.score(X_test, y_test)# 【测试集中的精度】
     print("LR:Accuracy in train set: %.4f" % (lr_result_train))
     print("LR:Accuracy in test set: %.4f" % (lr_result_test))
+
+
+
     #======================支持向量机=================
     from sklearn import svm
-    svm_tem = svm.LinearSVC()
+    svm_tem = svm.SVC(kernel="linear",probability=True,C=0.5)
+    #TODO：不断调整SVM所应用的核函数，在线性核（linear）、多项式核（poly）、双曲正切核（sigmod）、高斯径向核（rbf）
+    #最终发现线性核实现准确度最高！
+    #TODO:引入软间隔，同时衡量“训练样本的正确分类【经验风险】”和“决策函数的边际最大化【结构风险】”
+    #最终发现C=0.5效果最好
     svm_model = svm_tem.fit(X_train, y_train)
     svm_result_train = svm_model.score(X_train, y_train)# 【测试集中的精度】
     svm_result_test = svm_model.score(X_test, y_test)  # 【测试集中的精度】
@@ -110,13 +129,19 @@ def main(data_path):
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     # predicted probability on test set using logistic regression model
-    y_prob_lr = tree_model.predict(X_test)#训练后的模型对测试集进行预测！
+    y_prob_lr = lr_model.predict_proba(X_test)#训练后的模型对测试集进行预测！
+    y_prob_lr = y_prob_lr[:,1]#预测属于正例的概率，在绘制roc的时候，从大到小来排，不断分隔即可啦！！！
+    print("linear",y_prob_lr)#----打印出来的是只有0和1！
 
     # predicted probability on test set using tree model
-    y_prob_tree = lr_model.predict(X_test)#训练后的模型对测试集进行预测！
+    y_prob_tree = tree_model.predict_proba(X_test)#训练后的模型对测试集进行预测！
+    y_prob_tree = y_prob_tree[:,1]
+    print("tree",y_prob_tree)#---打印出来的是会有小数点的！
 
     # predicted probability on test set using svm model
-    y_prob_svm = svm_model.predict(X_test)
+    y_prob_svm = svm_model.predict_proba(X_test)
+    y_prob_svm = y_prob_svm[:, 1]
+    print("svm",y_prob_svm)#---打印出来的只有0和1
     # %%
 
 
