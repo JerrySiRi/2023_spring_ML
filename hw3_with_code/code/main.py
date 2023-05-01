@@ -66,8 +66,8 @@ def PlotROCs(y_prob_lr, y_prob_tree, y_prob_svm, y_test):
     plt.ylim((0, 1.02))
     plt.xticks(np.arange(0, 1.1, 0.1))  # 绘制刻度
     plt.yticks(np.arange(0, 1.1, 0.1))
-    plt.plot(fpr_lr, tpr_lr, lw=2, label='AUC_lr=%.4f' % auc_value_lr,color='b')  # 绘制AUC 曲线
-    plt.plot(fpr_dt, tpr_dt, lw=2, label='AUC_dt=%.4f' % auc_value_dt,color='g')  # 绘制AUC 曲线
+    #plt.plot(fpr_lr, tpr_lr, lw=2, label='AUC_lr=%.4f' % auc_value_lr,color='b')  # 绘制AUC 曲线
+    #plt.plot(fpr_dt, tpr_dt, lw=2, label='AUC_dt=%.4f' % auc_value_dt,color='g')  # 绘制AUC 曲线
     plt.plot(fpr_svm, tpr_svm, lw=2, label='AUC_svm=%.4f' % auc_value_svm,color='r')  # 绘制AUC 曲线
     plt.legend(loc='lower right')  # 设置显示标签的位置
     plt.xlabel('False Positive Rate(FPR)', fontsize=14)  # 绘制x,y 坐标轴对应的标签
